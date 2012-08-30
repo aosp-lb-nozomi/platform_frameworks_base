@@ -686,6 +686,10 @@ public final class WebViewClassic implements WebViewProvider, WebViewProvider.Sc
     // It's used to dismiss the dialog in destroy if not done before.
     private AlertDialog mListBoxDialog = null;
 
+    // Reference to the save password dialog so it can be dimissed in
+    // destroy if not done before.
+    private AlertDialog mSavePasswordDialog = null;
+
     static final String LOGTAG = "webview";
 
     private ZoomManager mZoomManager;
@@ -1826,7 +1830,7 @@ public final class WebViewClassic implements WebViewProvider, WebViewProvider.Sc
             neverRemember.getData().putString("password", password);
             neverRemember.obj = resumeMsg;
 
-            new AlertDialog.Builder(mContext)
+            mSavePasswordDialog = new AlertDialog.Builder(mContext)
                     .setTitle(com.android.internal.R.string.save_password_label)
                     .setMessage(com.android.internal.R.string.save_password_message)
                     .setPositiveButton(com.android.internal.R.string.save_password_notnow,
@@ -1837,6 +1841,7 @@ public final class WebViewClassic implements WebViewProvider, WebViewProvider.Sc
                                 resumeMsg.sendToTarget();
                                 mResumeMsg = null;
                             }
+                            mSavePasswordDialog = null;
                         }
                     })
                     .setNeutralButton(com.android.internal.R.string.save_password_remember,
@@ -1847,6 +1852,7 @@ public final class WebViewClassic implements WebViewProvider, WebViewProvider.Sc
                                 remember.sendToTarget();
                                 mResumeMsg = null;
                             }
+                            mSavePasswordDialog = null;
                         }
                     })
                     .setNegativeButton(com.android.internal.R.string.save_password_never,
@@ -1857,6 +1863,7 @@ public final class WebViewClassic implements WebViewProvider, WebViewProvider.Sc
                                 neverRemember.sendToTarget();
                                 mResumeMsg = null;
                             }
+                            mSavePasswordDialog = null;
                         }
                     })
                     .setOnCancelListener(new OnCancelListener() {
@@ -1866,6 +1873,7 @@ public final class WebViewClassic implements WebViewProvider, WebViewProvider.Sc
                                 resumeMsg.sendToTarget();
                                 mResumeMsg = null;
                             }
+                            mSavePasswordDialog = null;
                         }
                     }).show();
             // Return true so that WebViewCore will pause while the dialog is
@@ -2104,6 +2112,10 @@ public final class WebViewClassic implements WebViewProvider, WebViewProvider.Sc
         if (mListBoxDialog != null) {
             mListBoxDialog.dismiss();
             mListBoxDialog = null;
+        }
+        if (mSavePasswordDialog != null) {
+            mSavePasswordDialog.dismiss();
+            mSavePasswordDialog = null;
         }
         if (mWebViewCore != null) {
             // Tell WebViewCore to destroy itself
